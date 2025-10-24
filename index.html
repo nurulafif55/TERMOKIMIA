@@ -3,66 +3,511 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Modul: Perubahan Energi | Termokimia UM</title>
+  <title>Termokimia — Universitas Negeri Malang</title>
+
+  <!-- Tailwind CDN untuk prototipe -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#2563eb',
-            secondary: '#7c3aed',
-            accent: '#f59e0b',
-          },
-        },
-      },
-    };
-  </script>
+
+  <style>
+    /* kecilkan utilitas tambahan */
+    .blur-2xl { filter: blur(40px); }
+    .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .7; transform: scale(.985); }
+    }
+
+    /* flame SVG animations */
+    .flame-root { filter: drop-shadow(0 6px 20px rgba(99,102,241,0.08)); }
+    .flame-core { transform-origin: 50% 70%; animation: flickerCore 1300ms infinite ease-in-out; }
+    .flame-tip { transform-origin: 50% 80%; animation: flickerTip 900ms infinite ease-in-out; }
+    .flame-glow { animation: glow 1600ms infinite ease-in-out; }
+    @keyframes flickerCore {
+      0% { transform: translateY(0) scale(1); opacity:1; }
+      30% { transform: translateY(-2%) scale(1.02); opacity:0.98; }
+      60% { transform: translateY(1%) scale(0.99); opacity:0.95; }
+      100% { transform: translateY(0) scale(1); opacity:1; }
+    }
+    @keyframes flickerTip {
+      0% { transform: translateY(0) scale(1); opacity:1; }
+      30% { transform: translateY(-6%) scale(1.05); opacity:0.9; }
+      60% { transform: translateY(2%) scale(0.98); opacity:0.85; }
+      100% { transform: translateY(0) scale(1); opacity:1; }
+    }
+    @keyframes glow {
+      0% { opacity: .6; transform: scale(1); }
+      50% { opacity: .85; transform: scale(1.05); }
+      100% { opacity: .6; transform: scale(1); }
+    }
+
+    /* menu open/close */
+    .max-h-0 { max-height: 0; overflow: hidden; }
+    .max-h-64 { max-height: 16rem; }
+
+    /* card hover */
+    .card-hover { transition: transform .3s, box-shadow .3s; }
+    .card-hover:hover { transform: scale(1.03); box-shadow: 0 24px 48px rgba(2,6,23,0.12); }
+
+    /* chevron transition */
+    .chev-trans { transition: transform .2s; }
+    .group:hover .chev-trans { transform: translateX(4px); }
+
+    /* collapsible submodule */
+    .collapse { transition: max-height .28s ease, opacity .2s ease; overflow: hidden; max-height: 0; opacity: 0; }
+    .collapse.open { max-height: 500px; opacity: 1; }
+
+    /* smaller flame for cards */
+    .flame-sm { width: 36px; height: 36px; }
+  </style>
 </head>
+<body class="antialiased">
 
-<body class="bg-gradient-to-br from-blue-50 to-violet-50 text-gray-800">
-  <!-- NAVBAR -->
-  <nav class="bg-white/80 backdrop-blur sticky top-0 border-b border-gray-200">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <img src="https://upload.wikimedia.org/wikipedia/id/a/ab/Logo_Universitas_Negeri_Malang.svg" class="w-10 h-10" alt="UM">
-        <span class="font-semibold">Termokimia | Modul: Perubahan Energi</span>
+  <div id="app" class="min-h-screen transition-colors duration-500 bg-gradient-to-br from-blue-50 via-white to-violet-50">
+
+    <!-- NAV -->
+    <nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-white/95 border-b border-gray-200 backdrop-blur-lg shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <div id="logo-box" class="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-600 shadow-lg flame-root">
+              <!-- Animated SVG flame (small) -->
+              <svg class="flame-sm" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="#ffd166"/>
+                    <stop offset="1" stop-color="#ff6b6b"/>
+                  </linearGradient>
+                </defs>
+                <!-- outer glow -->
+                <g class="flame-glow" fill="url(#g1)" opacity="0.85">
+                  <path d="M32 4c-6 8-10 12-10 20 0 12 10 18 10 36 0-18 10-24 10-36 0-8-4-12-10-20z"/>
+                </g>
+                <!-- core -->
+                <g fill="#fff8e6" class="flame-core">
+                  <path d="M32 12c-3 4-6 6-6 11 0 7 6 11 6 22 0-11 6-15 6-22 0-5-3-7-6-11z"/>
+                </g>
+                <!-- tip -->
+                <g fill="#fff" class="flame-tip" opacity="0.95">
+                  <path d="M32 8c-2 3-4 4-4 7 0 5 4 7 4 13 0-6 4-8 4-13 0-3-2-4-4-7z"/>
+                </g>
+              </svg>
+            </div>
+            <div class="hidden sm:block">
+              <p id="org-title" class="text-sm font-bold text-gray-900">Universitas Negeri Malang</p>
+              <p id="org-sub" class="text-xs text-gray-600">Chemistry Learning Platform</p>
+            </div>
+          </div>
+
+          <!-- Right controls -->
+          <div class="flex items-center gap-3">
+            <button id="themeBtn" aria-label="Toggle theme" class="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all duration-300">
+              <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            </button>
+
+            <button id="menuBtn" aria-label="Toggle menu" class="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all duration-300">
+              <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
-      <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium">← Beranda</a>
-    </div>
-  </nav>
 
-  <!-- HERO -->
-  <header class="text-center py-16 bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-    <h1 class="text-4xl font-bold mb-2">Modul: Perubahan Energi</h1>
-    <p class="max-w-2xl mx-auto text-blue-100">Pelajari bagaimana energi berpindah dalam reaksi kimia melalui materi, eksperimen, soal, dan kuis interaktif.</p>
-  </header>
+      <!-- Dropdown menu -->
+      <div id="menuDropdown" class="overflow-hidden transition-all duration-300 max-h-0">
+        <div id="menuInner" class="px-4 py-2 border-t border-gray-200 bg-white/98">
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600 text-white mb-2">
+            <span class="font-medium">Beranda</span>
+          </button>
 
-  <!-- NAVIGATION CARDS -->
-  <main class="max-w-5xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 gap-6">
-    <a href="materi.html" class="group p-6 bg-blue-100 hover:bg-blue-200 rounded-xl border border-blue-200 shadow transition transform hover:-translate-y-1">
-      <h2 class="text-xl font-semibold text-blue-800 mb-2">📘 Materi</h2>
-      <p class="text-gray-700 group-hover:text-gray-900">Pahami konsep energi, sistem, dan lingkungan dalam reaksi kimia nyata.</p>
-    </a>
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <span class="font-medium">Perubahan Energi</span>
+          </button>
 
-    <a href="lkpd.html" class="group p-6 bg-violet-100 hover:bg-violet-200 rounded-xl border border-violet-200 shadow transition transform hover:-translate-y-1">
-      <h2 class="text-xl font-semibold text-violet-800 mb-2">📄 LKPD</h2>
-      <p class="text-gray-700 group-hover:text-gray-900">Lakukan percobaan mini untuk memahami energi eksoterm dan endoterm.</p>
-    </a>
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <span class="font-medium">Jenis Entalpi Standar</span>
+          </button>
 
-    <a href="latihan.html" class="group p-6 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 shadow transition transform hover:-translate-y-1">
-      <h2 class="text-xl font-semibold text-blue-800 mb-2">🧠 Latihan Soal</h2>
-      <p class="text-gray-700 group-hover:text-gray-900">Asah kemampuan analisis dengan soal berbasis konsep energi reaksi.</p>
-    </a>
+          <button class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
+            <span class="font-medium">Penentuan Entalpi</span>
+          </button>
+        </div>
+      </div>
+    </nav>
 
-    <a href="kuis.html" class="group p-6 bg-amber-100 hover:bg-amber-200 rounded-xl border border-amber-200 shadow transition transform hover:-translate-y-1">
-      <h2 class="text-xl font-semibold text-amber-800 mb-2">🎯 Kuis</h2>
-      <p class="text-gray-700 group-hover:text-gray-900">Uji pemahamanmu melalui kuis interaktif dan dapatkan skor langsung.</p>
-    </a>
-  </main>
+    <!-- HERO -->
+    <header class="relative overflow-hidden mt-16">
+      <div id="hero-overlay" class="absolute inset-0 bg-gradient-to-r from-blue-600 to-violet-600 opacity-90"></div>
+      <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22white%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
-  <footer class="text-center py-6 text-sm text-gray-600 border-t border-gray-200">
-    © 2025 Universitas Negeri Malang — Dikembangkan oleh <b>Nurul Afifah</b>
-  </footer>
+      <div class="relative max-w-6xl mx-auto px-4 py-16 sm:px-6 lg:px-8 transition-all duration-1000">
+        <div class="text-center">
+          <div class="flex justify-center mb-6">
+            <div class="relative">
+              <div class="absolute inset-0 bg-amber-500 blur-2xl opacity-50 rounded-full"></div>
+              <!-- Large animated flame SVG -->
+              <svg class="relative w-28 h-28 flame-root" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <radialGradient id="rad1" cx="50%" cy="60%">
+                    <stop offset="0%" stop-color="#fff7d6" />
+                    <stop offset="40%" stop-color="#ffd166" />
+                    <stop offset="100%" stop-color="#ff6b6b" />
+                  </radialGradient>
+                </defs>
+
+                <!-- glow -->
+                <g fill="url(#rad1)" opacity="0.85" class="flame-glow">
+                  <path d="M60 6c-11 14-18 21-18 36 0 21 18 31 18 62 0-31 18-41 18-62 0-15-7-22-18-36z"/>
+                </g>
+
+                <!-- outer flame -->
+                <g fill="#ffd166" class="flame-core">
+                  <path d="M60 18c-6 8-11 12-11 22 0 14 11 22 11 44 0-22 11-30 11-44 0-10-5-14-11-22z"/>
+                </g>
+
+                <!-- inner tip -->
+                <g fill="#fff8e6" class="flame-tip">
+                  <path d="M60 12c-3 4-6 6-6 11 0 7 6 11 6 22 0-11 6-15 6-22 0-5-3-7-6-11z"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <h1 class="text-5xl sm:text-6xl font-bold text-white mb-4 tracking-tight">Termokimia<span class="text-amber-400">.</span></h1>
+          <p class="text-xl sm:text-2xl max-w-3xl mx-auto leading-relaxed text-blue-100">
+            Jelajahi dunia energi dalam reaksi kimia melalui simulasi interaktif yang membantu memahami konsep termokimia dengan lebih mendalam
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- LEARNING OBJECTIVES -->
+    <section class="max-w-6xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 bg-blue-100 text-blue-700">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span class="font-semibold">Tujuan Pembelajaran</span>
+        </div>
+
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">Apa yang Akan Anda Pelajari</h2>
+        <p class="text-lg max-w-2xl mx-auto text-gray-600">Kompetensi yang akan dikuasai setelah menyelesaikan modul pembelajaran ini</p>
+      </div>
+
+      <div class="grid gap-4 max-w-4xl mx-auto">
+        <div class="flex gap-4 p-6 rounded-xl shadow-sm border bg-white border-gray-100">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg">1</div>
+          </div>
+          <p class="leading-relaxed text-gray-700">Memahami konsep dasar termokimia dan hukum termodinamika dalam reaksi kimia</p>
+        </div>
+
+        <div class="flex gap-4 p-6 rounded-xl shadow-sm border bg-white border-gray-100">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg">2</div>
+          </div>
+          <p class="leading-relaxed text-gray-700">Menganalisis pengaruh perubahan suhu terhadap laju dan kesetimbangan reaksi</p>
+        </div>
+
+        <div class="flex gap-4 p-6 rounded-xl shadow-sm border bg-white border-gray-100">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg">3</div>
+          </div>
+          <p class="leading-relaxed text-gray-700">Menjelaskan hubungan antara konsentrasi reaktan dengan energi aktivasi</p>
+        </div>
+
+        <div class="flex gap-4 p-6 rounded-xl shadow-sm border bg-white border-gray-100">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg">4</div>
+          </div>
+          <p class="leading-relaxed text-gray-700">Memprediksi perubahan entalpi reaksi berdasarkan kondisi eksperimen</p>
+        </div>
+
+        <div class="flex gap-4 p-6 rounded-xl shadow-sm border bg-white border-gray-100">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg">5</div>
+          </div>
+          <p class="leading-relaxed text-gray-700">Menerapkan prinsip termokimia dalam menyelesaikan masalah kehidupan sehari-hari</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULES -->
+    <section class="max-w-6xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 bg-violet-100 text-violet-700">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          <span class="font-semibold">Modul Simulasi</span>
+        </div>
+
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">Pilih Modul Pembelajaran</h2>
+        <p class="text-lg max-w-2xl mx-auto text-gray-600">Tiga modul simulasi interaktif untuk memperdalam pemahaman termokimia</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <!-- Module 1 -->
+        <div class="relative group cursor-pointer transition-all duration-500 card-hover">
+          <div class="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-xl"></div>
+
+          <div class="relative rounded-2xl shadow-lg border-2 border-orange-200 overflow-hidden bg-white h-full flex flex-col">
+            <div class="bg-orange-50 p-6 border-b-2 border-orange-200">
+              <div class="inline-flex p-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 mb-3 shadow-lg">
+                <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none"><path d="M12 2s4 4 4 8a4 4 0 1 1-8 0c0-4 4-8 4-8z" fill="currentColor" fill-opacity="0.16"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-1 text-gray-900">Perubahan Energi</h3>
+              <p class="text-sm font-medium text-gray-600">Sistem, Lingkungan & Reaksi</p>
+            </div>
+
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="leading-relaxed mb-6 flex-1 text-sm text-gray-600">Pelajari konsep sistem dan lingkungan serta perbedaan reaksi eksoterm dan endoterm</p>
+              <button class="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl font-semibold transition-all duration-300 group">
+                <span>Mulai Belajar</span>
+                <svg class="w-4 h-4 chev-trans" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="relative group cursor-pointer transition-all duration-500 card-hover">
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-xl"></div>
+
+          <div class="relative rounded-2xl shadow-lg border-2 border-blue-200 overflow-hidden bg-white h-full flex flex-col">
+            <div class="bg-blue-50 p-6 border-b-2 border-blue-200">
+              <div class="inline-flex p-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 mb-3 shadow-lg">
+                <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none"><path d="M3 6h14v12H3zM21 6v12" stroke="currentColor" stroke-width="1.2"/></svg>
+              </div>
+              <h3 class="text-xl font-bold mb-1 text-gray-900">Jenis Perubahan Entalpi Standar</h3>
+              <p class="text-sm font-medium text-gray-600">ΔH° Formation, Combustion & More</p>
+            </div>
+
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="leading-relaxed mb-6 flex-1 text-sm text-gray-600">Eksplorasi berbagai jenis perubahan entalpi standar dalam reaksi kimia</p>
+              <button class="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold transition-all duration-300 group">
+                <span>Mulai Belajar</span>
+                <svg class="w-4 h-4 chev-trans" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 3 - Penentuan Entalpi with submodules -->
+        <div class="relative group cursor-pointer transition-all duration-500 card-hover" id="penentuan-card">
+          <div class="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-xl"></div>
+
+          <div class="relative rounded-2xl shadow-lg border-2 border-violet-200 overflow-hidden bg-white h-full flex flex-col">
+            <div class="bg-violet-50 p-6 border-b-2 border-violet-200 flex items-start gap-4">
+              <div class="inline-flex p-3 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 mb-3 shadow-lg">
+                <!-- use animated small flame as module icon -->
+                <svg class="w-7 h-7" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+                  <g class="flame-core"><path d="M32 6c-6 8-10 12-10 20 0 12 10 18 10 36 0-18 10-24 10-36 0-8-4-12-10-20z" fill="url(#g2)"/></g>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-1 text-gray-900">Penentuan Entalpi</h3>
+                <p class="text-sm font-medium text-gray-600">Kalorimetri, Hukum Hess, Perubahan Entalpi, Energi Ikatan</p>
+              </div>
+            </div>
+
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="leading-relaxed mb-4 flex-1 text-sm text-gray-600">Pelajari cara menentukan entalpi melalui berbagai metode berikut. Klik tombol untuk buka sub-modul.</p>
+
+              <!-- Collapsible actions -->
+              <div class="space-y-3">
+                <button class="w-full text-left px-4 py-2 border rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold" id="toggleSubmodules">
+                  Lihat Sub-modul
+                </button>
+
+                <div id="submodules" class="collapse mt-2">
+                  <ul class="space-y-2">
+                    <li>
+                      <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg border hover:bg-gray-50" data-sub="kalorimetri">
+                        <div class="flex items-center gap-3">
+                          <svg class="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="none"><path d="M7 3h10l-3 7v7a2 2 0 0 1-4 0v-7L7 3z" fill="currentColor"/></svg>
+                          <div>
+                            <div class="font-medium">Kalorimetri</div>
+                            <div class="text-xs text-gray-500">Prinsip & percobaan kalorimeter</div>
+                          </div>
+                        </div>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+                      </button>
+                    </li>
+
+                    <li>
+                      <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg border hover:bg-gray-50" data-sub="hess">
+                        <div class="flex items-center gap-3">
+                          <svg class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.5"/></svg>
+                          <div>
+                            <div class="font-medium">Hukum Hess</div>
+                            <div class="text-xs text-gray-500">Menjumlah reaksi untuk ΔH</div>
+                          </div>
+                        </div>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+                      </button>
+                    </li>
+
+                    <li>
+                      <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg border hover:bg-gray-50" data-sub="perubahan">
+                        <div class="flex items-center gap-3">
+                          <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none"><path d="M12 2v20" stroke="currentColor" stroke-width="1.5"/></svg>
+                          <div>
+                            <div class="font-medium">Berdasar Perubahan Entalpi</div>
+                            <div class="text-xs text-gray-500">Pengambilan data & tabel standar</div>
+                          </div>
+                        </div>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+                      </button>
+                    </li>
+
+                    <li>
+                      <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg border hover:bg-gray-50" data-sub="ikatan">
+                        <div class="flex items-center gap-3">
+                          <svg class="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.1L19 22l-7-4-7 4 1.5-8.9L2 9h7z" fill="currentColor"/></svg>
+                          <div>
+                            <div class="font-medium">Energi Ikatan</div>
+                            <div class="text-xs text-gray-500">Perhitungan dengan energi ikatan</div>
+                          </div>
+                        </div>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-8 mt-16 border-t bg-gray-900 border-gray-800 text-gray-300">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <p class="text-sm mb-2">Dikembangkan untuk Pembelajaran Elektrokimia Tingkat Sarjana</p>
+          <p id="copyright" class="text-xs text-gray-500">© <span id="year"></span> Universitas Negeri Malang. Platform Pembelajaran Hybrid.</p>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Initial state
+    let isDark = false;
+    let menuOpen = false;
+
+    const app = document.getElementById('app');
+    const nav = document.getElementById('nav');
+    const heroOverlay = document.getElementById('hero-overlay');
+    const themeBtn = document.getElementById('themeBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    const menuInner = document.getElementById('menuInner');
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Toggle menu
+    menuBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        menuDropdown.classList.remove('max-h-0');
+        menuDropdown.classList.add('max-h-64');
+      } else {
+        menuDropdown.classList.remove('max-h-64');
+        menuDropdown.classList.add('max-h-0');
+      }
+    });
+
+    // Theme toggle
+    function enableDark() {
+      isDark = true;
+      app.classList.remove('bg-gradient-to-br','from-blue-50','via-white','to-violet-50');
+      app.classList.add('bg-gradient-to-br','from-gray-900','via-gray-800','to-gray-900','text-gray-200');
+      nav.classList.remove('bg-white/95','border-gray-200');
+      nav.classList.add('bg-gray-900/95','border-gray-700');
+      heroOverlay.classList.remove('from-blue-600','to-violet-600');
+      heroOverlay.classList.add('from-blue-900','to-violet-900');
+      themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m15.36 6.36l.71.71M5.93 5.93l.71.71m12.02 0l-.71.71M5.93 18.07l-.71.71"/>';
+      document.querySelector('footer').classList.remove('bg-gray-900','text-gray-300');
+      document.querySelector('footer').classList.add('bg-gray-900','text-gray-400');
+    }
+    function disableDark() {
+      isDark = false;
+      app.classList.remove('bg-gradient-to-br','from-gray-900','via-gray-800','to-gray-900','text-gray-200');
+      app.classList.add('bg-gradient-to-br','from-blue-50','via-white','to-violet-50');
+      nav.classList.remove('bg-gray-900/95','border-gray-700');
+      nav.classList.add('bg-white/95','border-gray-200');
+      heroOverlay.classList.remove('from-blue-900','to-violet-900');
+      heroOverlay.classList.add('from-blue-600','to-violet-600');
+      themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+      document.querySelector('footer').classList.remove('bg-gray-900','text-gray-400');
+      document.querySelector('footer').classList.add('bg-gray-900','text-gray-300');
+    }
+
+    themeBtn.addEventListener('click', () => {
+      if (!isDark) enableDark(); else disableDark();
+    });
+
+    // Close menu if click outside
+    document.addEventListener('click', (e) => {
+      if (!menuBtn.contains(e.target) && !menuInner.contains(e.target) && menuOpen) {
+        menuOpen = false;
+        menuDropdown.classList.remove('max-h-64');
+        menuDropdown.classList.add('max-h-0');
+      }
+    });
+
+    // Entrance animation
+    window.addEventListener('load', () => {
+      document.querySelectorAll('header, section').forEach((el, i) => {
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          el.style.transition = 'opacity .6s ease, transform .6s ease';
+          el.style.opacity = 1;
+          el.style.transform = 'translateY(0)';
+        }, 200 + i * 120);
+      });
+    });
+
+    // Sticky header shadow
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10) nav.classList.add('shadow-md'); else nav.classList.remove('shadow-md');
+    });
+
+    // Submodules collapse
+    const toggleBtn = document.getElementById('toggleSubmodules');
+    const subCont = document.getElementById('submodules');
+    toggleBtn.addEventListener('click', () => {
+      subCont.classList.toggle('open');
+      toggleBtn.textContent = subCont.classList.contains('open') ? 'Tutup Sub-modul' : 'Lihat Sub-modul';
+    });
+
+    // Submodule click handlers (placeholder actions)
+    document.querySelectorAll('#submodules button[data-sub]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-sub');
+        // contoh: buka modal / navigasi — untuk sekarang tampilkan alert ringkas
+        if (key === 'kalorimetri') {
+          alert('Sub-modul: Kalorimetri\nTopik: Prinsip kalorimetri & percobaan sederhana.');
+        } else if (key === 'hess') {
+          alert('Sub-modul: Hukum Hess\nTopik: Menggabungkan reaksi untuk menentukan ΔH.');
+        } else if (key === 'perubahan') {
+          alert('Sub-modul: Berdasar Perubahan Entalpi\nTopik: Menggunakan data standar dan tabel entalpi.');
+        } else if (key === 'ikatan') {
+          alert('Sub-modul: Energi Ikatan\nTopik: Menghitung ΔH menggunakan energi ikatan.');
+        }
+      });
+    });
+
+    // small accessibility
+    menuBtn.addEventListener('keyup', (e) => { if (e.key === 'Enter') menuBtn.click(); });
+    themeBtn.addEventListener('keyup', (e) => { if (e.key === 'Enter') themeBtn.click(); });
+
+  </script>
 </body>
 </html>
