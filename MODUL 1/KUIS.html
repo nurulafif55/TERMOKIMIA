@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kuis: Perubahan Energi | Termokimia UM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 text-gray-800">
+  <nav class="bg-white border-b border-gray-200 py-3 px-4 flex justify-between items-center sticky top-0">
+    <h1 class="font-semibold text-amber-700">🎯 Kuis Interaktif</h1>
+    <a href="modul-perubahan-energi.html" class="text-amber-700 hover:text-amber-900 font-medium">← Kembali</a>
+  </nav>
+
+  <main class="max-w-4xl mx-auto py-10 px-4">
+    <form id="quiz" class="space-y-6">
+      <div>
+        <p class="font-medium">1. Dalam reaksi eksoterm, energi berpindah dari...</p>
+        <label><input type="radio" name="q1" value="sistem ke lingkungan"> Sistem ke lingkungan</label><br>
+        <label><input type="radio" name="q1" value="lingkungan ke sistem"> Lingkungan ke sistem</label>
+      </div>
+
+      <div>
+        <p class="font-medium">2. Jika ΔH reaksi bernilai positif, maka reaksi tersebut...</p>
+        <label><input type="radio" name="q2" value="endoterm"> Endoterm</label><br>
+        <label><input type="radio" name="q2" value="eksoterm"> Eksoterm</label>
+      </div>
+
+      <div>
+        <p class="font-medium">3. Proses pembakaran kayu adalah contoh...</p>
+        <label><input type="radio" name="q3" value="reaksi eksoterm"> Reaksi eksoterm</label><br>
+        <label><input type="radio" name="q3" value="reaksi endoterm"> Reaksi endoterm</label>
+      </div>
+
+      <button type="button" id="submitQuiz" class="px-5 py-2 bg-amber-500 text-white font-semibold rounded hover:bg-amber-600">Kirim Jawaban</button>
+      <p id="result" class="mt-4 text-gray-800 font-medium"></p>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById("submitQuiz").addEventListener("click", () => {
+      const kunci = { q1: "sistem ke lingkungan", q2: "endoterm", q3: "reaksi eksoterm" };
+      let benar = 0;
+      for (let q in kunci) {
+        const jawab = document.querySelector(`input[name="${q}"]:checked`);
+        if (jawab && jawab.value === kunci[q]) benar++;
+      }
+      const res = document.getElementById("result");
+      res.innerHTML = `Skor kamu: <b class="text-amber-600">${benar}/3</b><br>` +
+        (benar === 3 ? "🎉 Hebat! Pemahamanmu sangat baik." :
+         benar === 2 ? "👍 Bagus! Masih bisa ditingkatkan." :
+         "💪 Tetap semangat belajar konsep energi.");
+    });
+  </script>
+</body>
+</html>
